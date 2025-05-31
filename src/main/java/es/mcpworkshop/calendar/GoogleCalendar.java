@@ -22,12 +22,16 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GoogleCalendar {
+
+  private static final Logger logger = LoggerFactory.getLogger(GoogleCalendar.class);
 
   /** Application name. */
   private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
@@ -71,15 +75,25 @@ public class GoogleCalendar {
             .setAccessType("offline")
             .build();
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-    Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    Credential credential = new AuthorizationCodeInstalledApp(flow, receiver)
+            .authorize("user");
     // returns an authorized Credential object.
     return credential;
   }
 
-  @Tool(description = "Retrieve a defined number of events from Google Calendar")
+  @Tool(
+      description =
+          """
+          Retrieves personal information, birthdays, meetings, and all personal related events
+          available in the user Google Calendar, where he does store all these information.
+          Be free to retrieve all the events you need in order to search for your information.
+          If 1 is not enough, maybe try more values. But 100 is the maximum allowed value,
+          so if no information is available in those 100 events, just reply to the user you can't find the information.
+          """)
   public List<Event> getGoogleEvents(
       @ToolParam(description = "Maximum number of events to retrieve") Integer maxEvents)
       throws GeneralSecurityException, IOException {
+    logger.info("Retrieving {} events from Google Calendar...", maxEvents);
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
         new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -99,5 +113,4 @@ public class GoogleCalendar {
             .execute();
     return events.getItems();
   }
-
 }
