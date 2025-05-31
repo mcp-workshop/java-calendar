@@ -1,3 +1,9 @@
 spring:
   main:
     web-application-type: none
+    banner-mode: off
+logging:
+  file:
+    name: /tmp/calendar.log
+  pattern:
+    console:
