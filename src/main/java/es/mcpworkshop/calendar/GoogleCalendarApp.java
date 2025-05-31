@@ -1,12 +1,18 @@
 package es.mcpworkshop.calendar;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class GoogleCalendarApp {
+@SpringBootApplication
+public class GoogleCalendarApp implements CommandLineRunner {
 
-  public static void main(String... args) throws IOException, GeneralSecurityException {
+  public static void main(String... args) {
+    SpringApplication.run(GoogleCalendarApp.class, args);
+  }
 
+  @Override
+  public void run(String... args) throws Exception {
     if (args.length != 1) {
       System.err.println("Usage: java -jar GoogleCalendarApp <num_max_events_to_retrieve>");
     } else {
