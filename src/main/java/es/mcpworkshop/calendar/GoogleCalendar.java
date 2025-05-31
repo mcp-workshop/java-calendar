@@ -22,7 +22,11 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GoogleCalendar {
 
   /** Application name. */
@@ -32,7 +36,7 @@ public class GoogleCalendar {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
   /** Directory to store authorization tokens for this application. */
-  private static final String TOKENS_DIRECTORY_PATH = "tokens";
+  private static final String TOKENS_DIRECTORY_PATH = "/tmp/tokens";
 
   /**
    * Global instance of the scopes required by this quickstart. If modifying these scopes, delete
@@ -72,7 +76,10 @@ public class GoogleCalendar {
     return credential;
   }
 
-  List<Event> getGoogleEvents(Integer maxEvents) throws GeneralSecurityException, IOException {
+  @Tool(description = "Retrieve a defined number of events from Google Calendar")
+  public List<Event> getGoogleEvents(
+      @ToolParam(description = "Maximum number of events to retrieve") Integer maxEvents)
+      throws GeneralSecurityException, IOException {
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
         new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -93,8 +100,4 @@ public class GoogleCalendar {
     return events.getItems();
   }
 
-  void printEvents(List<Event> events) {
-    events.forEach(
-        event -> System.out.printf("%s en %s%n", event.getSummary(), event.getStart().getDate()));
-  }
 }
