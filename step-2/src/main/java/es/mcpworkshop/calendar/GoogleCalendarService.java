@@ -95,6 +95,7 @@ public class GoogleCalendarService {
             .setOrderBy("startTime")
             .setSingleEvents(true)
             .execute();
+    events.getItems().forEach(event -> System.out.printf("%s en %s%n", event.getSummary(), event.getStart().getDate()));
     return events.getItems();
   }
 }
