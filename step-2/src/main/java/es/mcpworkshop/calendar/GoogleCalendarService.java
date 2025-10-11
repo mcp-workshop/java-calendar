@@ -22,7 +22,9 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.ai.tool.annotation.Tool;
+
+import org.springaicommunity.mcp.annotation.McpTool;
+import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -76,8 +78,8 @@ public class GoogleCalendarService {
     return credential;
   }
 
-  @Tool
-  List<Event> getGoogleEvents(Integer maxEvents) throws IOException, GeneralSecurityException {
+  @McpTool
+  List<Event> getGoogleEvents(@McpToolParam Integer maxEvents) throws IOException, GeneralSecurityException {
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
         new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -95,7 +97,11 @@ public class GoogleCalendarService {
             .setOrderBy("startTime")
             .setSingleEvents(true)
             .execute();
-    events.getItems().forEach(event -> System.out.printf("%s en %s%n", event.getSummary(), event.getStart().getDate()));
+    events
+        .getItems()
+        .forEach(
+            event ->
+                System.out.printf("%s en %s%n", event.getSummary(), event.getStart().getDate()));
     return events.getItems();
   }
 }
